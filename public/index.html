@@ -6,13 +6,14 @@
 </head>
 <body>
   <h2>Make a Call from your Twilio Number</h2>
-  <input type="text" id="phoneNumber" placeholder="+551150281973" />
+  <input type="text" id="phoneNumber" placeholder="+15551234567" />
   <button onclick="makeCall()">Call Now</button>
 
   <script>
     let device;
 
-    fetch('/token')
+    // Fetch access token from your server
+    fetch('https://twilio-outbound-call.onrender.com/token')
       .then(response => response.text())
       .then(token => {
         device = new Twilio.Device(token, {
@@ -21,12 +22,21 @@
           enableRingingState: true
         });
 
-        device.on('ready', () => console.log('Device Ready'));
-        device.on('error', error => console.error('Device Error:', error));
-      });
+        device.on('ready', () => console.log('📞 Device is ready!'));
+        device.on('error', error => console.error('❌ Device Error:', error));
+        device.on('connect', () => console.log('✅ Call connected'));
+        device.on('disconnect', () => console.log('📴 Call disconnected'));
+
+        device.register(); // Important!
+      })
+      .catch(error => console.error('⚠️ Failed to get token:', error));
 
     function makeCall() {
       const number = document.getElementById('phoneNumber').value;
+      if (!device) {
+        alert("Device not ready yet.");
+        return;
+      }
       device.connect({ To: number });
     }
   </script>
