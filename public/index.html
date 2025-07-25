@@ -9,36 +9,31 @@
   <input type="text" id="phoneNumber" placeholder="+15551234567" />
   <button onclick="makeCall()">Call Now</button>
 
-  <script>
-    let device;
+<script src="https://media.twiliocdn.com/sdk/js/client/v1.10/twilio.min.js"></script>
+<script>
+  fetch('/token')
+    .then(response => response.text()) // changed from .json() to .text()
+    .then(token => {
+      console.log("✅ Token fetched:", token);
+      Twilio.Device.setup(token);
 
-    // Fetch access token from your server
-    fetch('https://twilio-outbound-call.onrender.com/token')
-      .then(response => response.text())
-      .then(token => {
-        device = new Twilio.Device(token, {
-          codecPreferences: ['opus', 'pcmu'],
-          fakeLocalDTMF: true,
-          enableRingingState: true
-        });
+      Twilio.Device.ready(function () {
+        console.log("🎉 Device is ready!");
+      });
 
-        device.on('ready', () => console.log('📞 Device is ready!'));
-        device.on('error', error => console.error('❌ Device Error:', error));
-        device.on('connect', () => console.log('✅ Call connected'));
-        device.on('disconnect', () => console.log('📴 Call disconnected'));
+      Twilio.Device.error(function (error) {
+        console.error("❌ Twilio.Device error:", error.message);
+      });
+    })
+    .catch(error => {
+      console.error("❌ Failed to fetch token:", error);
+    });
 
-        device.register(); // Important!
-      })
-      .catch(error => console.error('⚠️ Failed to get token:', error));
-
-    function makeCall() {
-      const number = document.getElementById('phoneNumber').value;
-      if (!device) {
-        alert("Device not ready yet.");
-        return;
-      }
-      device.connect({ To: number });
-    }
-  </script>
+  function call() {
+    const params = { To: document.getElementById('number').value };
+    console.log("📞 Making call with params:", params);
+    Twilio.Device.connect(params);
+  }
+</script>
 </body>
 </html>
