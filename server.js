@@ -28,7 +28,7 @@ app.get('/token', (req, res) => {
 // ✅ This is Step 7 – Webhook to respond with TwiML
 app.post('/voice', (req, res) => {
   const response = new VoiceResponse();
-  const dial = response.dial();
+  const dial = response.dial({ callerId: process.env.TWILIO_PHONE_NUMBER });
   dial.number(req.body.To);
   res.type('text/xml');
   res.send(response.toString());
