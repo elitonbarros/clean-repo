@@ -2,21 +2,121 @@
 <html>
 <head>
   <title>Twilio Outbound Call</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://sdk.twilio.com/js/client/v1.13/twilio.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    #phoneNumber {
+      font-size: 28px;
+      padding: 15px;
+      margin-bottom: 20px;
+      width: 90%;
+      max-width: 320px;
+      text-align: center;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dial-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .dial-pad button {
+      font-size: 22px;
+      padding: 20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      background-color: #f0f0f0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    .dial-pad button small {
+      display: block;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .dial-pad button:hover {
+      background-color: #ddd;
+    }
+
+    .delete-btn {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      padding: 10px 20px;
+      border-radius: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 20px;
+    }
+
+    .call-btn, .hangup-btn {
+      font-size: 18px;
+      padding: 12px 28px;
+      border-radius: 30px;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .call-btn {
+      background-color: green;
+    }
+
+    .hangup-btn {
+      background-color: red;
+    }
+
+    @media (max-width: 500px) {
+      .dial-pad {
+        grid-template-columns: repeat(3, 70px);
+        gap: 10px;
+      }
+
+      .dial-pad button {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #fdfdfd; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh;">
-  
-  <h2 style="margin-top: 30px; margin-bottom: 10px;">📱 Virtual Phone</h2>
+<body>
 
-  <!-- Number input -->
-  <input 
-    type="text" 
-    id="phoneNumber" 
-    placeholder="+1..." 
-    style="font-size: 28px; padding: 15px; width: 80%; max-width: 320px; text-align: center; border: 2px solid #ccc; border-radius: 10px; margin-bottom: 20px;"
-  />
+  <h2>📱 Virtual Phone</h2>
 
-  <!-- Keypad -->
+  <input type="text" id="phoneNumber" placeholder="+1..." />
+
   <div class="dial-pad">
     <button onclick="appendNumber('1')">1</button>
     <button onclick="appendNumber('2')">2<br><small>ABC</small></button>
@@ -32,66 +132,13 @@
     <button onclick="appendNumber('#')">#</button>
   </div>
 
-  <!-- Delete -->
-  <div style="margin-top: 15px;">
-    <button onclick="deleteLast()" style="padding: 10px 20px; font-size: 16px; border-radius: 10px;">⌫ Delete</button>
+  <button class="delete-btn" onclick="deleteLast()">⌫ Delete</button>
+
+  <div class="actions">
+    <button class="call-btn" onclick="makeCall()">📞 Call</button>
+    <button class="hangup-btn" onclick="hangUp()">🔴 Hang Up</button>
   </div>
 
-  <!-- Call buttons -->
-  <div style="margin-top: 20px;">
-    <button onclick="makeCall()" 
-      style="background-color: green; color: white; font-size: 18px; padding: 12px 24px; margin-right: 10px; border: none; border-radius: 50px;">
-      📞 Call
-    </button>
-
-    <button onclick="hangUp()" 
-      style="background-color: red; color: white; font-size: 18px; padding: 12px 24px; border: none; border-radius: 50px;">
-      🔴 Hang Up
-    </button>
-  </div>
-
-  <!-- Styles -->
-  <style>
-    .dial-pad {
-      display: grid;
-      grid-template-columns: repeat(3, 80px);
-      gap: 12px;
-      justify-content: center;
-    }
-
-    .dial-pad button {
-      width: 80px;
-      height: 80px;
-      font-size: 22px;
-      border-radius: 50%;
-      border: none;
-      background-color: #f1f1f1;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .dial-pad button small {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .dial-pad button:hover {
-      background-color: #ddd;
-    }
-
-    @media (max-width: 500px) {
-      .dial-pad {
-        grid-template-columns: repeat(3, 70px);
-        gap: 10px;
-      }
-
-      .dial-pad button {
-        width: 70px;
-        height: 70px;
-      }
-    }
-  </style>
-
-  <!-- Logic -->
   <script>
     fetch('/token')
       .then(response => response.text())
