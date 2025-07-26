@@ -8,6 +8,7 @@
   <h2>Make a Call from your Twilio Number</h2>
   <input type="text" id="phoneNumber" placeholder="+15551234567" />
   <button onclick="makeCall()">Call Now</button>
+  <button onclick="hangUp()">Hang Up</button>
 
   <script>
     fetch('/token')
@@ -35,6 +36,11 @@
       console.log("📞 Making call with params:", params);
       Twilio.Device.connect(params);
     }
+     function hangUp() {
+     console.log("🛑 Hanging up the call...");
+     Twilio.Device.disconnectAll();
+}
+
   </script>
 </body>
 </html>
