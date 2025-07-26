@@ -9,31 +9,32 @@
   <input type="text" id="phoneNumber" placeholder="+15551234567" />
   <button onclick="makeCall()">Call Now</button>
 
-<script src="https://media.twiliocdn.com/sdk/js/client/v1.10/twilio.min.js"></script>
-<script>
-  fetch('/token')
-    .then(response => response.text()) // changed from .json() to .text()
-    .then(token => {
-      console.log("✅ Token fetched:", token);
-      Twilio.Device.setup(token);
+  <script>
+    fetch('/token')
+      .then(response => response.text())
+      .then(token => {
+        console.log("✅ Token fetched:", token);
+        Twilio.Device.setup(token);
 
-      Twilio.Device.ready(function () {
-        console.log("🎉 Device is ready!");
+        Twilio.Device.ready(function () {
+          console.log("🎉 Device is ready!");
+        });
+
+        Twilio.Device.error(function (error) {
+          console.error("❌ Twilio.Device error:", error.message);
+        });
+      })
+      .catch(error => {
+        console.error("❌ Failed to fetch token:", error);
       });
 
-      Twilio.Device.error(function (error) {
-        console.error("❌ Twilio.Device error:", error.message);
-      });
-    })
-    .catch(error => {
-      console.error("❌ Failed to fetch token:", error);
-    });
-
-  function call() {
-    const params = { To: document.getElementById('number').value };
-    console.log("📞 Making call with params:", params);
-    Twilio.Device.connect(params);
-  }
-</script>
+    // ✅ Nome correto da função
+    function makeCall() {
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      const params = { To: phoneNumber };
+      console.log("📞 Making call with params:", params);
+      Twilio.Device.connect(params);
+    }
+  </script>
 </body>
 </html>
