@@ -4,11 +4,23 @@
   <title>Twilio Outbound Call</title>
   <script src="https://sdk.twilio.com/js/client/v1.13/twilio.min.js"></script>
 </head>
-<body>
-  <h2>Make a Call from your Twilio Number</h2>
-  <input type="text" id="phoneNumber" placeholder="+15551234567" />
-  <button onclick="makeCall()">Call Now</button>
-  <button onclick="hangUp()">Hang Up</button>
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+  <h2>📞 Eliton's Project 1</h2>
+
+  <input type="text" id="phoneNumber" placeholder="+15551234567"
+    style="font-size: 24px; padding: 10px; width: 300px; border-radius: 5px; border: 1px solid #ccc;" />
+
+  <div style="margin-top: 20px;">
+    <button onclick="makeCall()" 
+      style="background-color: green; color: white; font-size: 18px; padding: 10px 20px; margin-right: 10px; border: none; border-radius: 5px;">
+      📞 Call
+    </button>
+
+    <button onclick="hangUp()" 
+      style="background-color: red; color: white; font-size: 18px; padding: 10px 20px; border: none; border-radius: 5px;">
+      🔴 Hang Up
+    </button>
+  </div>
 
   <script>
     fetch('/token')
@@ -29,18 +41,18 @@
         console.error("❌ Failed to fetch token:", error);
       });
 
-    // ✅ Nome correto da função
     function makeCall() {
       const phoneNumber = document.getElementById('phoneNumber').value;
       const params = { To: phoneNumber };
       console.log("📞 Making call with params:", params);
       Twilio.Device.connect(params);
     }
-     function hangUp() {
-     console.log("🛑 Hanging up the call...");
-     Twilio.Device.disconnectAll();
-}
 
+    function hangUp() {
+      console.log("🛑 Hanging up the call...");
+      Twilio.Device.disconnectAll();
+    }
   </script>
 </body>
+
 </html>
